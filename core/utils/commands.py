@@ -18,4 +18,4 @@ async def set_commands(bot: Bot):
         )
     ]
 
-    await bot.set_my_commands(commands, BotCommandScopeDefault)
+    await bot.set_my_commands(commands, scope=BotCommandScopeDefault())
