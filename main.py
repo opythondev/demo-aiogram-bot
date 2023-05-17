@@ -5,6 +5,8 @@ from aiogram.types import Message, ContentType
 from aiogram.filters import Command, CommandStart
 
 from core.handlers.basic import get_start, get_photo, get_hello
+from core.handlers.contact import get_fake_contacts, get_true_contacts
+from core.filters.iscontact import IsTrueContact
 from core.settings import settings
 
 
@@ -27,8 +29,12 @@ async def start():
 
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
+
+    # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_photo, F.content_type == ContentType.PHOTO)
     dp.message.register(get_hello, F.text == 'Привет')
+    dp.message.register(get_true_contacts, F.content_type == ContentType.CONTACT, IsTrueContact())
+    dp.message.register(get_fake_contacts, F.content_type == ContentType.CONTACT)
     dp.message.register(get_start, CommandStart)
 
     try:
