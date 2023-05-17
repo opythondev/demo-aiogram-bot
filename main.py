@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, ContentType
 from aiogram.filters import Command, CommandStart
 
-from core.handlers.basic import get_start, get_photo
+from core.handlers.basic import get_start, get_photo, get_hello
 from core.settings import settings
 
 
@@ -28,6 +28,7 @@ async def start():
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
     dp.message.register(get_photo, F.content_type == ContentType.PHOTO)
+    dp.message.register(get_hello, F.text == 'Привет')
     dp.message.register(get_start, CommandStart)
 
     try:
