@@ -1,7 +1,7 @@
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message
 import asyncio
 import logging
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
 from core.handlers.basic import get_start
 from core.settings import settings
 
