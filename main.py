@@ -1,12 +1,18 @@
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message
 import asyncio
 import logging
-from core.handlers.basic import get_start
+from aiogram import Bot, Dispatcher, F
+from aiogram.types import Message, ContentType
+from aiogram.filters import Command, CommandStart
+
+from core.handlers.basic import get_start, get_photo, get_hello, get_location
+from core.handlers.contact import get_fake_contacts, get_true_contacts
+from core.filters.iscontact import IsTrueContact
 from core.settings import settings
+from core.utils.commands import set_commands
 
 
 async def on_start(bot: Bot):
+    await set_commands(bot)
     await bot.send_message(settings.bots.admin_id, text="Bot был запущен")
 
 
@@ -26,7 +32,13 @@ async def start():
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
 
-    dp.message.register(get_start)
+    # Хэндлеры отрабатывают по порядку, сверху вниз
+    dp.message.register(get_location, F.content_type == ContentType.LOCATION)
+    dp.message.register(get_photo, F.content_type == ContentType.PHOTO)
+    dp.message.register(get_hello, F.text == 'Привет')
+    dp.message.register(get_true_contacts, F.content_type == ContentType.CONTACT, IsTrueContact())
+    dp.message.register(get_fake_contacts, F.content_type == ContentType.CONTACT)
+    dp.message.register(get_start, CommandStart)
 
     try:
         await dp.start_polling(bot)
