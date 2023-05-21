@@ -4,13 +4,12 @@ import json
 from aiogram import Bot
 from aiogram.types import Message
 from core.keyboards.reply import reply_keyboard, loc_tel_poll_keyboard, get_reply_keyboard
-from core.keyboards.inline import select_macbook
+from core.keyboards.inline import select_macbook, get_inline_keyboard
 
 
 async def get_inline(message: Message):
     await message.answer(f"Привет! {message.from_user.first_name}.\nОтображаю инлайн клавиатуру",
-                         reply_markup=select_macbook)
-
+                         reply_markup=get_inline_keyboard())
 
 
 async def get_start(message: Message):
