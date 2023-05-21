@@ -8,7 +8,7 @@ from core.keyboards.inline import select_macbook
 
 
 async def get_inline(message: Message):
-    await message.answer(f"<s>Привет! {message.from_user.first_name}</s>.\n отображаю инлайн клавиатуру",
+    await message.answer(f"Привет! {message.from_user.first_name}.\nОтображаю инлайн клавиатуру",
                          reply_markup=select_macbook)
 
 
