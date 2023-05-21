@@ -7,6 +7,12 @@ from core.keyboards.reply import reply_keyboard, loc_tel_poll_keyboard, get_repl
 from core.keyboards.inline import select_macbook
 
 
+async def get_inline(message: Message):
+    await message.answer(f"<s>Привет! {message.from_user.first_name}</s>.\n отображаю инлайн клавиатуру",
+                         reply_markup=select_macbook)
+
+
+
 async def get_start(message: Message):
     await message.answer(f"<s>Привет! {message.from_user.first_name}</s>", reply_markup=get_reply_keyboard())
 
