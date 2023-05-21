@@ -28,7 +28,7 @@ select_macbook = InlineKeyboardMarkup(inline_keyboard=[
         ),
         InlineKeyboardButton(
             text="Profile",
-            url="tg://user?6213341124"
+            url="tg://user?id=6213341124"
         )
     ]
 ])
