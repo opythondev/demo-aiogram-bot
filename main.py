@@ -11,6 +11,8 @@ from core.filters.iscontact import IsTrueContact
 from core.settings import settings
 from core.utils.commands import set_commands
 
+from core.utils.callbackdata import MacInfo
+
 
 async def on_start(bot: Bot):
     await set_commands(bot)
@@ -35,7 +37,9 @@ async def start():
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
-    dp.callback_query.register(select_macbook, F.data.startswith('macbook_'))
+    # dp.callback_query.register(select_macbook, MacInfo.filter())
+    # with filter
+    dp.callback_query.register(select_macbook, MacInfo.filter(F.model == "Pro"))
     dp.message.register(get_location, F.content_type == ContentType.LOCATION)
     dp.message.register(get_photo, F.content_type == ContentType.PHOTO)
     dp.message.register(get_hello, F.text == 'Привет')
