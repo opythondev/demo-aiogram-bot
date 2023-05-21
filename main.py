@@ -6,6 +6,7 @@ from aiogram.filters import CommandStart, Command
 
 from core.handlers.basic import get_start, get_photo, get_hello, get_location, get_inline
 from core.handlers.contact import get_fake_contacts, get_true_contacts
+from core.handlers.callback import select_macbook
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
 from core.utils.commands import set_commands
@@ -34,6 +35,7 @@ async def start():
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
+    dp.callback_query.register(select_macbook, F.data.startswith('Air_'))
     dp.message.register(get_location, F.content_type == ContentType.LOCATION)
     dp.message.register(get_photo, F.content_type == ContentType.PHOTO)
     dp.message.register(get_hello, F.text == 'Привет')
