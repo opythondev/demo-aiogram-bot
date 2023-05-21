@@ -1,8 +1,8 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, ContentType
-from aiogram.filters import Command, CommandStart
+from aiogram.types import ContentType
+from aiogram.filters import CommandStart
 
 from core.handlers.basic import get_start, get_photo, get_hello, get_location
 from core.handlers.contact import get_fake_contacts, get_true_contacts
