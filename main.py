@@ -2,13 +2,16 @@ import asyncio
 import logging
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import ContentType
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 
-from core.handlers.basic import get_start, get_photo, get_hello, get_location
+from core.handlers.basic import get_start, get_photo, get_hello, get_location, get_inline
 from core.handlers.contact import get_fake_contacts, get_true_contacts
+from core.handlers.callback import select_macbook
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
 from core.utils.commands import set_commands
+
+from core.utils.callbackdata import MacInfo
 
 
 async def on_start(bot: Bot):
@@ -33,6 +36,10 @@ async def start():
     dp.shutdown.register(on_stop)
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
+    dp.message.register(get_inline, Command(commands=["inline"]))
+    # dp.callback_query.register(select_macbook, MacInfo.filter())
+    # with filter
+    dp.callback_query.register(select_macbook, MacInfo.filter(F.model == "Pro"))
     dp.message.register(get_location, F.content_type == ContentType.LOCATION)
     dp.message.register(get_photo, F.content_type == ContentType.PHOTO)
     dp.message.register(get_hello, F.text == 'Привет')
