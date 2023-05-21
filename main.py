@@ -7,6 +7,8 @@ from aiogram.filters import CommandStart, Command
 from core.handlers.basic import get_start, get_photo, get_hello, get_location, get_inline
 from core.handlers.contact import get_fake_contacts, get_true_contacts
 from core.handlers.callback import select_macbook
+from core.handlers.payments import order, pre_checkout_query, successful_payment
+
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
 from core.utils.commands import set_commands
@@ -37,6 +39,11 @@ async def start():
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
+
+    dp.message.register(order, Command(commands=["pay"]))
+    dp.pre_checkout_query.register(pre_checkout_query)
+    dp.message.register(successful_payment, F.content_type == ContentType.SUCCESSFUL_PAYMENT)
+
     # dp.callback_query.register(select_macbook, MacInfo.filter())
     # with filter
     dp.callback_query.register(select_macbook, MacInfo.filter(F.model == "Pro"))
