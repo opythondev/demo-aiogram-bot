@@ -12,7 +12,8 @@ async def get_inline(message: Message):
                          reply_markup=get_inline_keyboard())
 
 
-async def get_start(message: Message):
+async def get_start(message: Message, counter: str):
+    await message.answer(f"Message /start count: {counter}")
     await message.answer(f"<s>Привет! {message.from_user.first_name}</s>", reply_markup=get_reply_keyboard())
 
 
