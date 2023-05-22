@@ -16,6 +16,7 @@ from core.utils.commands import set_commands
 from core.utils.callbackdata import MacInfo
 
 from core.middlewares.countermiddleware import CounterMiddleware
+from core.middlewares.officehours import OfficeHoursMiddleware
 
 
 async def on_start(bot: Bot):
@@ -41,6 +42,7 @@ async def start():
 
     # Middlewares registration
     dp.message.middleware.register(CounterMiddleware())
+    dp.message.middleware.register(OfficeHoursMiddleware())
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
