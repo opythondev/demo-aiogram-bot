@@ -23,7 +23,7 @@ class OfficeHoursMiddleware(BaseMiddleware):
         :param data:
         :return:
         """
-        if not office_hours():
+        if office_hours():
             return await handler(event, data)
         # IF event type == Message
         # await event.answer("We are open from Monday to Friday\n\rWorking hours: 8-19\n\rText us later🤖")
