@@ -42,7 +42,10 @@ async def start():
 
     # Middlewares registration
     dp.message.middleware.register(CounterMiddleware())
-    dp.message.middleware.register(OfficeHoursMiddleware())
+    # if event type Message
+    # dp.message.middleware.register(OfficeHoursMiddleware())
+    # if event type Any Update
+    dp.update.middleware.register(OfficeHoursMiddleware())
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
