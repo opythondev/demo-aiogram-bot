@@ -11,9 +11,11 @@ from core.handlers.payments import order, pre_checkout_query, successful_payment
 
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
-from core.utils.commands import set_commands
 
+from core.utils.commands import set_commands
 from core.utils.callbackdata import MacInfo
+
+from core.middlewares.countermiddleware import CounterMiddleware
 
 
 async def on_start(bot: Bot):
@@ -36,6 +38,9 @@ async def start():
 
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
+
+    # Middlewares registration
+    dp.message.middleware.register(CounterMiddleware())
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
