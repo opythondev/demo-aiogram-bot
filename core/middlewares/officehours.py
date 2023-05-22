@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
-from aiogram.types import Message
+from aiogram.types import Message, TelegramObject
 
 
 def office_hours() -> bool:
@@ -12,10 +12,18 @@ class OfficeHoursMiddleware(BaseMiddleware):
 
     async def __call__(
         self,
-        handler: Callable[[Message, Dict[str, Any]], Awaitable[Any]],
-        event: Message,
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: TelegramObject,
         data: Dict[str, Any]
     ) -> Any:
-        if office_hours():
+        """
+
+        :param handler: Use Message OR TelegramObject to handle any updates
+        :param event: Use Message OR TelegramObject to handle any updates
+        :param data:
+        :return:
+        """
+        if not office_hours():
             return await handler(event, data)
-        await event.answer("We are open from Monday to Friday\n\rWorking hours: 8-19\n\rText us later🤖")
+        # IF event type == Message
+        # await event.answer("We are open from Monday to Friday\n\rWorking hours: 8-19\n\rText us later🤖")
