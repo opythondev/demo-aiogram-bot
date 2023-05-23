@@ -9,12 +9,14 @@ from core.handlers.basic import get_start, get_photo, get_hello, get_location, g
 from core.handlers.contact import get_fake_contacts, get_true_contacts
 from core.handlers.callback import select_macbook
 from core.handlers.payments import order, pre_checkout_query, successful_payment, shipping_check
+from core.handlers import fsmform
 
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
 
 from core.utils.commands import set_commands
 from core.utils.callbackdata import MacInfo
+from core.utils.statesform import StepsForm
 
 from core.middlewares.countermiddleware import CounterMiddleware
 from core.middlewares.officehours import OfficeHoursMiddleware
@@ -65,6 +67,11 @@ async def start():
     dp.message.middleware.register(DbSession(connection_pool))
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
+    dp.message.register(fsmform.get_form, Command(commands=["form"]))
+    dp.message.register(fsmform.get_name, StepsForm.GET_NAME)
+    dp.message.register(fsmform.get_last_name, StepsForm.GET_LAST_NAME)
+    dp.message.register(fsmform.get_age, StepsForm.GET_AGE)
+
     dp.message.register(get_inline, Command(commands=["inline"]))
 
     dp.message.register(order, Command(commands=["pay"]))
