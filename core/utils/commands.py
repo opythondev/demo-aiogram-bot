@@ -23,6 +23,42 @@ async def set_commands(bot: Bot):
         BotCommand(
             command='pay',
             description='Test payments'
+        ),
+        BotCommand(
+            command='audio',
+            description='Send audio'
+        ),
+        BotCommand(
+            command='document',
+            description='Send document'
+        ),
+        BotCommand(
+            command='mediagroup',
+            description='Send mediagroup'
+        ),
+        BotCommand(
+            command='photo',
+            description='Send photo'
+        ),
+        BotCommand(
+            command='sticker',
+            description='Send sticker'
+        ),
+        BotCommand(
+            command='document',
+            description='Send document'
+        ),
+        BotCommand(
+            command='video',
+            description='Send video'
+        ),
+        BotCommand(
+            command='video_note',
+            description='Send video note'
+        ),
+        BotCommand(
+            command='voice',
+            description='Send voice'
         )
     ]
 
