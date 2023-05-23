@@ -2,10 +2,15 @@ import asyncio
 import logging
 import asyncpg
 from datetime import datetime, timedelta
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import ContentType
 from aiogram.filters import CommandStart, Command
+
+from aiogram.fsm.storage.redis import RedisStorage
+from apscheduler.jobstores.redis import RedisJobStore
+from apscheduler_di import ContextSchedulerDecorator
 
 from core.handlers.basic import get_start, get_photo, get_hello, get_location, get_inline
 from core.handlers.contact import get_fake_contacts, get_true_contacts
@@ -44,26 +49,39 @@ async def create_pool():
 async def start():
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s - [%(levelname)s] - %(name)s -"
-                               " (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-                        )
+                               " (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s")
 
     bot = Bot(settings.bots.bot_token, parse_mode='HTML')
-    connection_pool = await create_pool()
-    dp = Dispatcher()
 
-    scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(appscheduler.send_message_time,
-                      trigger="date", run_date=datetime.now() + timedelta(seconds=10.0),
-                      kwargs={'bot': bot})
-    scheduler.add_job(appscheduler.send_message_cron,
-                      trigger="cron",
-                      hour=datetime.now().hour, minute=datetime.now().minute + 1,
-                      start_date=datetime.now(),
-                      kwargs={'bot': bot})
-    scheduler.add_job(appscheduler.send_message_interval,
-                      trigger="interval",
-                      seconds=60,
-                      kwargs={'bot': bot})
+    connection_pool = await create_pool()
+
+    storage = RedisStorage.from_url("redis://127.0.0.1:6379/0",
+                                    connection_kwargs={"password": settings.bots.redis_pass})
+
+    dp = Dispatcher(storage=storage)
+
+    jobstorage = {
+        "default": RedisJobStore(
+            jobs_key='dispatched_jobs',
+            run_times_key='dispatched_running',
+            host='127.0.0.1',
+            port=6379,
+            db=2,
+            password=settings.bots.redis_pass
+        )
+    }
+
+    scheduler = ContextSchedulerDecorator(AsyncIOScheduler(timezone="Europe/Moscow", jobstores=jobstorage))
+    scheduler.ctx.add_instance(bot, declared_class=Bot)
+    # scheduler.add_job(appscheduler.send_message_time,
+    #                   trigger="date", run_date=datetime.now() + timedelta(seconds=10.0))
+    # scheduler.add_job(appscheduler.send_message_cron,
+    #                   trigger="cron",
+    #                   hour=datetime.now().hour, minute=datetime.now().minute + 1,
+    #                   start_date=datetime.now())
+    # scheduler.add_job(appscheduler.send_message_interval,
+    #                   trigger="interval",
+    #                   seconds=60)
 
     scheduler.start()
 

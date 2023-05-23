@@ -6,6 +6,7 @@ from environs import Env
 class Bots:
     bot_token: str
     admin_id: int
+    redis_pass: str
 
 
 @dataclass
@@ -20,7 +21,8 @@ def get_settings(path: str):
     return Settings(
         bots=Bots(
             admin_id=env.int('ADMIN_ID'),
-            bot_token=env.str('BOT_TOKEN')
+            bot_token=env.str('BOT_TOKEN'),
+            redis_pass=env.str('REDIS_PASS')
         )
     )
 
