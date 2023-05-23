@@ -24,6 +24,7 @@ from core.utils.statesform import StepsForm
 from core.middlewares.countermiddleware import CounterMiddleware
 from core.middlewares.officehours import OfficeHoursMiddleware
 from core.middlewares.dbmiddleware import DbSession
+from core.middlewares.apschedulermiddleware import ApschedulerMiddleware
 
 
 async def on_start(bot: Bot):
@@ -73,6 +74,8 @@ async def start():
     """
     Each update(event) will pass through all middlewares
     """
+    # Scheduler Middleware
+    dp.update.middleware.register(ApschedulerMiddleware(scheduler))
     # Counter middleware
     dp.message.middleware.register(CounterMiddleware())
 
