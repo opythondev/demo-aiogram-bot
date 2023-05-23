@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import asyncpg
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import ContentType
 from aiogram.filters import CommandStart, Command
@@ -11,9 +12,13 @@ from core.handlers.payments import order, pre_checkout_query, successful_payment
 
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
-from core.utils.commands import set_commands
 
+from core.utils.commands import set_commands
 from core.utils.callbackdata import MacInfo
+
+from core.middlewares.countermiddleware import CounterMiddleware
+from core.middlewares.officehours import OfficeHoursMiddleware
+from core.middlewares.dbmiddleware import DbSession
 
 
 async def on_start(bot: Bot):
@@ -25,6 +30,11 @@ async def on_stop(bot: Bot):
     await bot.send_message(settings.bots.admin_id, text="Bot был остановлен")
 
 
+async def create_pool():
+    return await asyncpg.create_pool(user="root", password='example', database='pgtests',
+                                     host='127.0.0.1', port=5432, command_timeout=60)
+
+
 async def start():
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s - [%(levelname)s] - %(name)s -"
@@ -32,10 +42,27 @@ async def start():
                         )
 
     bot = Bot(settings.bots.bot_token, parse_mode='HTML')
+    connection_pool = await create_pool()
     dp = Dispatcher()
 
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
+
+    # Middlewares
+    """
+    Each update(event) will pass through all middlewares
+    """
+    # Counter middleware
+    dp.message.middleware.register(CounterMiddleware())
+
+    # Working hours middleware
+    # if event type Message
+    # dp.message.middleware.register(OfficeHoursMiddleware())
+    # if event type Any Update
+    dp.update.middleware.register(OfficeHoursMiddleware())
+
+    # DB middleware
+    dp.message.middleware.register(DbSession(connection_pool))
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
     dp.message.register(get_inline, Command(commands=["inline"]))
