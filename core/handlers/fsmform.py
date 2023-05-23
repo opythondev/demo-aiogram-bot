@@ -1,6 +1,10 @@
+from datetime import datetime, timedelta
+from aiogram import Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from core.utils.statesform import StepsForm
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from core.handlers.appscheduler import send_message_middleware
 
 
 async def get_form(message: Message, state: FSMContext):
@@ -20,7 +24,7 @@ async def get_last_name(message: Message, state: FSMContext):
     await state.set_state(StepsForm.GET_AGE)
 
 
-async def get_age(message: Message, state: FSMContext):
+async def get_age(message: Message, bot: Bot, state: FSMContext, scheduler: AsyncIOScheduler):
     await message.answer(f'Ваш возраст: <b>{message.text}</b>\n\r\n\r')
     await state.update_data(age=message.text)
     context_data = await state.get_data()
@@ -34,3 +38,5 @@ async def get_age(message: Message, state: FSMContext):
                 f"Возраст: {age}"
     await message.answer(data_user)
     await state.clear()
+    scheduler.add_job(send_message_middleware, trigger="date", run_date=datetime.now() + timedelta(seconds=10.0),
+                      kwargs={'bot': bot, 'chat_id': message.from_user.id})
