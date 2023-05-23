@@ -13,8 +13,8 @@ async def set_commands(bot: Bot):
             description='Help command descr'
         ),
         BotCommand(
-            command='cancel',
-            description='Cancel command descr'
+            command='form',
+            description='New Form Input'
         ),
         BotCommand(
             command='inline',
