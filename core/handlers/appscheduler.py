@@ -12,3 +12,7 @@ async def send_message_cron(bot: Bot):
 
 async def send_message_interval(bot: Bot):
     await bot.send_message(settings.bots.admin_id, f"This message will be sent with 1 minute interval")
+
+
+async def send_message_middleware(bot: Bot, chat_id: int):
+    await bot.send_message(chat_id, f'This message send by middleware scheduler job')
