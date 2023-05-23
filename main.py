@@ -1,6 +1,8 @@
 import asyncio
 import logging
 import asyncpg
+from datetime import datetime, timedelta
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import ContentType
 from aiogram.filters import CommandStart, Command
@@ -10,6 +12,7 @@ from core.handlers.contact import get_fake_contacts, get_true_contacts
 from core.handlers.callback import select_macbook
 from core.handlers.payments import order, pre_checkout_query, successful_payment, shipping_check
 from core.handlers import fsmform
+from core.handlers import appscheduler
 
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
@@ -46,6 +49,22 @@ async def start():
     bot = Bot(settings.bots.bot_token, parse_mode='HTML')
     connection_pool = await create_pool()
     dp = Dispatcher()
+
+    scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
+    scheduler.add_job(appscheduler.send_message_time,
+                      trigger="date", run_date=datetime.now() + timedelta(seconds=10.0),
+                      kwargs={'bot': bot})
+    scheduler.add_job(appscheduler.send_message_cron,
+                      trigger="cron",
+                      hour=datetime.now().hour, minute=datetime.now().minute + 1,
+                      start_date=datetime.now(),
+                      kwargs={'bot': bot})
+    scheduler.add_job(appscheduler.send_message_interval,
+                      trigger="interval",
+                      seconds=60,
+                      kwargs={'bot': bot})
+
+    scheduler.start()
 
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
