@@ -18,6 +18,7 @@ from core.handlers.callback import select_macbook
 from core.handlers.payments import order, pre_checkout_query, successful_payment, shipping_check
 from core.handlers import fsmform
 from core.handlers import appscheduler
+from core.handlers import sendmedia
 
 from core.filters.iscontact import IsTrueContact
 from core.settings import settings
@@ -107,6 +108,15 @@ async def start():
     dp.message.middleware.register(DbSession(connection_pool))
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
+    dp.message.register(sendmedia.get_audio, Command(commands=["audio"]))
+    dp.message.register(sendmedia.get_document, Command(commands=["document"]))
+    dp.message.register(sendmedia.get_media_group, Command(commands=["mediagroup"]))
+    dp.message.register(sendmedia.get_photo, Command(commands=["photo"]))
+    dp.message.register(sendmedia.get_sticker, Command(commands=["sticker"]))
+    dp.message.register(sendmedia.get_video, Command(commands=["video"]))
+    dp.message.register(sendmedia.get_video_note, Command(commands=["video_note"]))
+    dp.message.register(sendmedia.get_voice, Command(commands=["voice"]))
+
     dp.message.register(fsmform.get_form, Command(commands=["form"]))
     dp.message.register(fsmform.get_name, StepsForm.GET_NAME)
     dp.message.register(fsmform.get_last_name, StepsForm.GET_LAST_NAME)
