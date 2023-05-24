@@ -45,10 +45,6 @@ async def set_commands(bot: Bot):
             description='Send sticker'
         ),
         BotCommand(
-            command='document',
-            description='Send document'
-        ),
-        BotCommand(
             command='video',
             description='Send video'
         ),
