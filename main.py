@@ -4,9 +4,10 @@ import asyncpg
 from datetime import datetime, timedelta
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher, F, flags
 from aiogram.types import ContentType
 from aiogram.filters import CommandStart, Command
+from aiogram.utils.chat_action import ChatActionMiddleware
 
 from aiogram.fsm.storage.redis import RedisStorage
 from apscheduler.jobstores.redis import RedisJobStore
@@ -31,6 +32,7 @@ from core.middlewares.countermiddleware import CounterMiddleware
 from core.middlewares.officehours import OfficeHoursMiddleware
 from core.middlewares.dbmiddleware import DbSession
 from core.middlewares.apschedulermiddleware import ApschedulerMiddleware
+from core.middlewares.example_chat_action_middleware import ExampleChatActionMiddleware
 
 
 async def on_start(bot: Bot):
@@ -93,6 +95,10 @@ async def start():
     """
     Each update(event) will pass through all middlewares
     """
+    # Chat Actions Middleware
+    # dp.update.middleware.register(ChatActionMiddleware())
+    dp.message.middleware.register(ExampleChatActionMiddleware())
+
     # Scheduler Middleware
     dp.update.middleware.register(ApschedulerMiddleware(scheduler))
     # Counter middleware
@@ -108,14 +114,14 @@ async def start():
     dp.message.middleware.register(DbSession(connection_pool))
 
     # Хэндлеры отрабатывают по порядку, сверху вниз
-    dp.message.register(sendmedia.get_audio, Command(commands=["audio"]))
-    dp.message.register(sendmedia.get_document, Command(commands=["document"]))
-    dp.message.register(sendmedia.get_media_group, Command(commands=["mediagroup"]))
-    dp.message.register(sendmedia.get_photo, Command(commands=["photo"]))
-    dp.message.register(sendmedia.get_sticker, Command(commands=["sticker"]))
-    dp.message.register(sendmedia.get_video, Command(commands=["video"]))
-    dp.message.register(sendmedia.get_video_note, Command(commands=["video_note"]))
-    dp.message.register(sendmedia.get_voice, Command(commands=["voice"]))
+    dp.message.register(sendmedia.get_audio, Command(commands=["audio"]), flags={'chat_action': 'upload_document'})
+    dp.message.register(sendmedia.get_document, Command(commands=["document"]), flags={'chat_action': 'upload_document'})
+    dp.message.register(sendmedia.get_media_group, Command(commands=["mediagroup"]), flags={'chat_action': 'upload_photo'})
+    dp.message.register(sendmedia.get_photo, Command(commands=["photo"]), flags={'chat_action': 'upload_photo'})
+    dp.message.register(sendmedia.get_sticker, Command(commands=["sticker"]), flags={'chat_action': 'choose_sticker'})
+    dp.message.register(sendmedia.get_video, Command(commands=["video"]), flags={'chat_action': 'upload_video'})
+    dp.message.register(sendmedia.get_video_note, Command(commands=["video_note"]), flags={'chat_action': 'upload_video_note'})
+    dp.message.register(sendmedia.get_voice, Command(commands=["voice"]), flags={'chat_action': 'upload_voice'})
 
     dp.message.register(fsmform.get_form, Command(commands=["form"]))
     dp.message.register(fsmform.get_name, StepsForm.GET_NAME)

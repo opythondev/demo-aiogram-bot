@@ -42,21 +42,18 @@ async def get_sticker(message: Message, bot: Bot):
 
 
 async def get_video(message: Message, bot: Bot):
-    async with ChatActionSender.upload_video(chat_id=message.from_user.id):
-        video = FSInputFile('./resources/video.mp4')
-        await bot.send_video(message.from_user.id, video)
+    video = FSInputFile('./resources/video.mp4')
+    await bot.send_video(message.from_user.id, video)
 
 
 async def get_video_note(message: Message, bot: Bot):
     """
     Issue - Does mot sending notes
     """
-    async with ChatActionSender.upload_video(chat_id=message.from_user.id):
-        video_note = FSInputFile('./resources/video1to1_3.mp4')
-        await bot.send_video_note(message.from_user.id, video_note)
+    video_note = FSInputFile('./resources/video1to1_3.mp4')
+    await bot.send_video_note(message.from_user.id, video_note)
 
 
 async def get_voice(message: Message, bot: Bot):
-    async with ChatActionSender.upload_voice(chat_id=message.from_user.id):
-        voice = FSInputFile('./resources/audio.ogg')
-        await bot.send_voice(message.from_user.id, voice)
+    voice = FSInputFile('./resources/audio.ogg')
+    await bot.send_voice(message.from_user.id, voice)
