@@ -5,7 +5,7 @@ from aiogram.types import Message, TelegramObject
 
 
 def office_hours() -> bool:
-    return datetime.now().weekday() in (0, 1, 2, 3, 4) and datetime.now().hour in ([i for i in range(8, 19)])
+    return datetime.now().weekday() in (0, 1, 2, 3, 4) and datetime.now().hour in ([i for i in range(0, 23)])
 
 
 class OfficeHoursMiddleware(BaseMiddleware):
